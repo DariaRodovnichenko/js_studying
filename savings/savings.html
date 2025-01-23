@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Savings</h1>
+
+    <div>
+      <label for="monthly-savings">Enter your monthly savings: </label>
+      <input
+        type="number"
+        id="monthly-savings"
+        placeholder="e.g., 1000"
+        required
+      />
+    </div>
+
+    <div>
+      <label for="years">Enter the number of years you plan to save: </label>
+      <input type="number" id="years" placeholder="e.g., 5" />
+    </div>
+
+    <button onClick="calculateSavings()">Save</button>
+
+    <h2 id="result">Total:</h2>
+
+    <script src="./savings.js"></script>
+  </body>
+</html>
