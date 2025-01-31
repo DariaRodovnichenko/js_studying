@@ -6,11 +6,12 @@ const buildHTML = () => {
     <label for="number">Select Quantity:</label>
     <select id="number"></select>
     
-        <button id="addButton">Add</button>
-        <button id="deleteLastButton">Delete Last Item</button>
-        <ul id="cartList"></ul>
+    <button id="addButton">Add</button>
+   
+    <ul id="cartList"></ul>
     <h3>Total Price: $<span id="total">0.00</span></h3>`;
 };
+
 buildHTML();
 
 // Product list with prices
@@ -30,7 +31,6 @@ const populateDropdowns = () => {
   const productSelect = document.querySelector("#productSelect");
   const quantitySelect = document.querySelector("#number");
 
-  // Get product names and sort them alphabetically
   const sortedProducts = Object.keys(productData).sort();
 
   // Populate product dropdown with sorted names
@@ -61,17 +61,24 @@ const updateCartDisplay = () => {
   // Sort the cart alphabetically by product name
   cart.sort((a, b) => a.name.localeCompare(b.name));
 
-  for (const item of cart) {
-    ulEl.innerHTML += `<li>${item.name} (Unit Price: $${item.unitPrice.toFixed(
-      2
-    )}) × ${item.quantity} = $${item.totalPrice.toFixed(2)}</li>`;
+  // Display cart items
+  cart.forEach((item, index) => {
+    ulEl.innerHTML += `
+      <li>
+        ${item.name} (Unit Price: $${item.unitPrice.toFixed(2)}) × ${
+      item.quantity
+    } = $${item.totalPrice.toFixed(2)}
+        <button class="removeButton" data-index="${index}">Remove</button>
+      </li>
+    `;
     basketTotal += item.totalPrice;
-  }
+  });
+
   document.querySelector("#total").textContent = basketTotal.toFixed(2);
 
-  // Attach event listeners to remove links
-  document.querySelectorAll(".remove-link").forEach((link) => {
-    link.addEventListener("click", (e) => {
+  // Attach event listeners to remove buttons
+  document.querySelectorAll(".removeButton").forEach((button) => {
+    button.addEventListener("click", (e) => {
       const index = e.target.getAttribute("data-index");
       removeItem(index);
     });
@@ -109,27 +116,18 @@ const addToCart = () => {
   updateCartDisplay();
 };
 
-// Function to remove the last item from the cart
-const removeLastItem = () => {
-  if (cart.length > 0) {
-    cart.pop();
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-    updateCartDisplay();
-  }
-};
-
 // Function to remove a specific item by index
 const removeItem = (index) => {
-  cart.splice(index, 1);
+  cart.splice(index, 1); // Remove item at specified index
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
   updateCartDisplay();
 };
 
 // Attach event listeners
 document.querySelector("#addButton").addEventListener("click", addToCart);
-document
-  .querySelector("#deleteLastButton")
-  .addEventListener("click", removeLastItem);
+// document
+//   .querySelector("#deleteLastButton")
+//   .addEventListener("click", removeLastItem);
 
 // Initialize the cart display
 updateCartDisplay();
