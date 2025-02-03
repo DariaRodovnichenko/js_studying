@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase CDN Demo</title>
+  </head>
+  <body>
+    <h1>Firebase CDN Connected</h1>
+
+    <div id="product-storage"></div>
+
+    <script type="module">
+      // Import the functions you need from the SDKs
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        get,
+        child,
+        push,
+        remove,
+      } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCwdmNY7CSP2gkvnVvWOQcg9EtcrK3iXP4",
+        authDomain: "fir-project-af1d5.firebaseapp.com",
+        projectId: "fir-project-af1d5",
+        storageBucket: "fir-project-af1d5.firebasestorage.app",
+        messagingSenderId: "589011608357",
+        appId: "1:589011608357:web:e8b0d59051a41ad1f570cc",
+        measurementId: "G-63C0S5BRV9",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+
+      // Initialize Firebase Database
+      const db = getDatabase(
+        app,
+        "https://fir-project-af1d5-default-rtdb.europe-west1.firebasedatabase.app"
+      );
+      const cartRef = ref(db, "shoppingCart");
+
+      // Product data with prices
+      const productData = {
+        Apple: 1.5,
+        Orange: 2.0,
+        Pear: 2.5,
+        Lemon: 1.8,
+      };
+
+      // Function to build HTML structure
+      const buildHTML = () => {
+        document.querySelector("#product-storage").innerHTML = `
+          <label for="productSelect">Select Product:</label>
+          <select id="productSelect"></select>
+
+          <label for="number">Select Quantity:</label>
+          <select id="number"></select>
+
+          <button id="addButton">Add</button>
+
+          <ul id="cartList"></ul>
+          <h3>Total Price: $<span id="total">0.00</span></h3>
+        `;
+      };
+
+      buildHTML();
+
+      // Function to populate product and quantity dropdowns
+      const populateDropdowns = () => {
+        const productSelect = document.querySelector("#productSelect");
+        const quantitySelect = document.querySelector("#number");
+
+        const sortedProducts = Object.keys(productData).sort();
+
+        // Populate product dropdown with sorted names
+        sortedProducts.forEach((product) => {
+          const option = document.createElement("option");
+          option.value = product;
+          option.textContent = `${product} ($${productData[product].toFixed(
+            2
+          )})`;
+          productSelect.appendChild(option);
+        });
+
+        // Populate quantity dropdown (1-5)
+        for (let i = 1; i <= 5; i++) {
+          const option = document.createElement("option");
+          option.value = i;
+          option.textContent = i;
+          quantitySelect.appendChild(option);
+        }
+      };
+
+      populateDropdowns();
+
+      // Function to update cart display
+      const updateCartDisplay = () => {
+        const ulEl = document.querySelector("#cartList");
+        ulEl.innerHTML = "";
+        let basketTotal = 0;
+
+        // Get cart data from Firebase
+        get(cartRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const cart = snapshot.val();
+              Object.keys(cart).forEach((key) => {
+                const item = cart[key];
+                ulEl.innerHTML += `
+                <li>
+                  ${item.name} (Unit Price: $${item.unitPrice.toFixed(2)}) × ${
+                  item.quantity
+                } = $${item.totalPrice.toFixed(2)}
+                  <button class="removeButton" data-key="${key}">Remove</button>
+                </li>
+              `;
+                basketTotal += item.totalPrice;
+              });
+
+              document.querySelector("#total").textContent =
+                basketTotal.toFixed(2);
+
+              // Attach event listeners to remove buttons
+              document.querySelectorAll(".removeButton").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                  const key = e.target.getAttribute("data-key");
+                  removeItem(key);
+                });
+              });
+            } else {
+              console.log("No items in cart.");
+              // Reset total price to 0 when the cart is empty
+              document.querySelector("#total").textContent = "0.00";
+            }
+          })
+          .catch((error) => {
+            console.error("Error retrieving data:", error);
+          });
+      };
+
+      // Function to add items to the cart or update the quantity if it exists
+      const addToCart = () => {
+        const productSelect = document.querySelector("#productSelect");
+        const quantitySelect = document.querySelector("#number");
+
+        const selectedProduct = productSelect.value;
+        const selectedQuantity = Number(quantitySelect.value);
+        const unitPrice = productData[selectedProduct];
+        const addedPrice = unitPrice * selectedQuantity;
+
+        const cartItem = {
+          name: selectedProduct,
+          quantity: selectedQuantity,
+          unitPrice: unitPrice,
+          totalPrice: addedPrice,
+        };
+
+        // Check if the product already exists in the cart
+        get(cartRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const cart = snapshot.val();
+              let existingProductKey = null;
+              let existingProduct = null;
+
+              // Find the existing product in the cart
+              Object.keys(cart).forEach((key) => {
+                if (cart[key].name === selectedProduct) {
+                  existingProductKey = key;
+                  existingProduct = cart[key];
+                }
+              });
+
+              // If the product exists, update the quantity and total price
+              if (existingProduct) {
+                const updatedQuantity =
+                  existingProduct.quantity + selectedQuantity;
+                const updatedTotalPrice = updatedQuantity * unitPrice;
+
+                const updatedCartItem = {
+                  name: selectedProduct,
+                  quantity: updatedQuantity,
+                  unitPrice: unitPrice,
+                  totalPrice: updatedTotalPrice,
+                };
+
+                // Update the existing product in Firebase
+                set(
+                  ref(db, `shoppingCart/${existingProductKey}`),
+                  updatedCartItem
+                )
+                  .then(() => {
+                    console.log("Item updated successfully!");
+                    updateCartDisplay(); // Update the display with the updated cart
+                  })
+                  .catch((error) => {
+                    console.error("Error updating item:", error);
+                  });
+              } else {
+                // If the product doesn't exist, add it as a new item
+                const newKey = push(cartRef).key;
+                set(ref(db, `shoppingCart/${newKey}`), cartItem)
+                  .then(() => {
+                    console.log("Item added successfully!");
+                    updateCartDisplay(); // Update the display with the new cart
+                  })
+                  .catch((error) => {
+                    console.error("Error adding item:", error);
+                  });
+              }
+            } else {
+              console.log("Cart is empty");
+              // If the cart is empty, just add the item
+              const newKey = push(cartRef).key;
+              set(ref(db, `shoppingCart/${newKey}`), cartItem)
+                .then(() => {
+                  console.log("Item added successfully!");
+                  updateCartDisplay(); // Update the display with the new cart
+                })
+                .catch((error) => {
+                  console.error("Error adding item:", error);
+                });
+            }
+          })
+          .catch((error) => {
+            console.error("Error retrieving cart data:", error);
+          });
+      };
+
+      // Function to remove an item by key from Firebase
+      const removeItem = (key) => {
+        const itemRef = ref(db, `shoppingCart/${key}`);
+        remove(itemRef)
+          .then(() => {
+            console.log("Item removed successfully!");
+            updateCartDisplay();
+          })
+          .catch((error) => {
+            console.error("Error removing item:", error);
+          });
+      };
+
+      // Attach event listeners
+      document.querySelector("#addButton").addEventListener("click", addToCart);
+
+      // Initialize the cart display
+      updateCartDisplay();
+    </script>
+  </body>
+</html>
