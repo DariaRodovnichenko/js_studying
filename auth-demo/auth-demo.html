@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase Auth Popup</title>
+  </head>
+  <body>
+    <h2>Sign in / Sign up with Email</h2>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button id="sign-in-btn">Sign In</button>
+    <button id="sign-up-btn">Sign Up</button>
+    <button id="logout-btn" style="display: none">Sign Out</button>
+    <p id="user-info"></p>
+
+    <script type="module">
+      // Import Firebase SDKs
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCwdmNY7CSP2gkvnVvWOQcg9EtcrK3iXP4",
+        authDomain: "fir-project-af1d5.firebaseapp.com",
+        databaseURL:
+          "https://fir-project-af1d5-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "fir-project-af1d5",
+        storageBucket: "fir-project-af1d5.firebasestorage.app",
+        messagingSenderId: "589011608357",
+        appId: "1:589011608357:web:e8b0d59051a41ad1f570cc",
+        measurementId: "G-63C0S5BRV9",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // Sign in with email and password
+      document
+        .getElementById("sign-in-btn")
+        .addEventListener("click", async () => {
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const userCredential = await signInWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+            document.getElementById(
+              "user-info"
+            ).innerText = `Hello, ${userCredential.user.email}`;
+          } catch (error) {
+            console.error("Error signing in:", error);
+          }
+        });
+
+      // Sign up with email and password
+      document
+        .getElementById("sign-up-btn")
+        .addEventListener("click", async () => {
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const newUser = await createUserWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+            document.getElementById(
+              "user-info"
+            ).innerText = `Account created and signed in: ${newUser.user.email}`;
+          } catch (error) {
+            console.error("Error signing up:", error);
+          }
+        });
+
+      // Sign out
+      document
+        .getElementById("logout-btn")
+        .addEventListener("click", async () => {
+          await signOut(auth);
+        });
+
+      // Monitor authentication state
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          console.log("User is connected", user);
+          document.getElementById(
+            "user-info"
+          ).innerText = `Hello, ${user.email}`;
+          document.getElementById("sign-in-btn").style.display = "none";
+          document.getElementById("logout-btn").style.display = "block";
+        } else {
+          console.log("Not connected");
+          document.getElementById("user-info").innerText = "";
+          document.getElementById("sign-in-btn").style.display = "block";
+          document.getElementById("logout-btn").style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
