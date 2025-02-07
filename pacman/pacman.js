@@ -7,14 +7,17 @@ canvas.height = innerHeight;
 class Boundary {
   static width = 40;
   static height = 40;
-  constructor({ position }) {
+  constructor({ position, image }) {
     this.position = position;
     this.width = 40;
     this.height = 40;
+    this.image = image;
   }
   draw() {
-    ctx.fillStyle = "blue";
-    ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+    // ctx.fillStyle = "blue";
+    // ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+
+    ctx.drawImage(this.image, this.position.x, this.position.y);
   }
 }
 
@@ -70,60 +73,515 @@ let lastKey = "";
 
 const map = [
   [
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    "1",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "2",
   ],
   [
-    1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 1,
+    "|",
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    "-",
+    3,
+    "-",
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    "|",
   ],
   [
-    1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 1,
-    1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1,
+    "|",
+    2,
+    "-",
+    "-",
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    2,
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    2,
+    "|",
   ],
 
   [
-    1, 2, 1, 2, 2, 1, 2, 2, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1,
+    "|",
+    2,
+    "-",
+    2,
+    2,
+    "-",
+    2,
+    2,
+    2,
+    "-",
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    "-",
+    2,
+    2,
+    2,
+    2,
+    2,
+    "-",
+    2,
+    "|",
   ],
   [
-    1, 2, 2, 2, 2, 1, 2, 1, 2, 2, 2, 1, 5, 0, 5, 1, 2, 1, 3, 2, 2, 2, 1, 1, 1,
-    1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1,
+    "|",
+    2,
+    2,
+    2,
+    2,
+    "-",
+    2,
+    "-",
+    2,
+    2,
+    2,
+    "-",
+    5,
+    0,
+    5,
+    "-",
+    2,
+    "-",
+    3,
+    2,
+    2,
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    "|",
   ],
   [
-    1, 1, 1, 2, 2, 1, 3, 1, 1, 2, 2, 1, 0, 0, 0, 1, 2, 1, 1, 1, 1, 2, 1, 0, 0,
-    0, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1,
+    "|",
+    "-",
+    "-",
+    2,
+    2,
+    "-",
+    3,
+    "-",
+    "-",
+    2,
+    2,
+    "-",
+    0,
+    0,
+    0,
+    "-",
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    0,
+    0,
+    0,
+    "-",
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    2,
+    "-",
+    "-",
+    "|",
   ],
   [
-    1, 0, 0, 0, 2, 1, 2, 1, 2, 2, 2, 1, 5, 0, 5, 1, 2, 1, 2, 2, 2, 2, 1, 1, 1,
-    1, 1, 2, 1, 2, 2, 2, 2, 0, 0, 0, 1,
+    "|",
+    0,
+    0,
+    0,
+    2,
+    "-",
+    2,
+    "-",
+    2,
+    2,
+    2,
+    "-",
+    5,
+    0,
+    5,
+    "-",
+    2,
+    "-",
+    2,
+    2,
+    2,
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    2,
+    2,
+    2,
+    2,
+    0,
+    0,
+    0,
+    "|",
   ], //exit
   [
-    1, 1, 1, 2, 2, 1, 2, 2, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 3, 2,
-    2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 1, 1,
+    "|",
+    "-",
+    "-",
+    2,
+    2,
+    "-",
+    2,
+    2,
+    2,
+    "-",
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    2,
+    "-",
+    "-",
+    2,
+    "-",
+    3,
+    2,
+    2,
+    2,
+    2,
+    "-",
+    2,
+    2,
+    2,
+    2,
+    2,
+    "-",
+    "-",
+    "|",
   ],
   [
-    1, 3, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 1,
-    1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 1,
+    "|",
+    3,
+    2,
+    2,
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    "-",
+    2,
+    2,
+    2,
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    2,
+    2,
+    "|",
   ],
   [
-    1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1,
+    "|",
+    2,
+    "-",
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    "-",
+    2,
+    "-",
+    "-",
+    "-",
+    2,
+    2,
+    2,
+    "-",
+    "-",
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    "-",
+    2,
+    "|",
   ],
   [
-    1, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+    "|",
+    2,
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    "-",
+    2,
+    "-",
+    2,
+    "-",
+    "-",
+    "-",
+    2,
+    "-",
+    2,
+    2,
+    "-",
+    0,
+    0,
+    "-",
+    2,
+    2,
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    2,
+    "|",
   ],
   [
-    1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 1, 0, 0, 0, 0, 1, 4, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 1,
+    "|",
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    "-",
+    0,
+    0,
+    0,
+    0,
+    "-",
+    4,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    "|",
   ],
   [
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    "3",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "4",
   ],
 ];
-// 1-border; 2-dot; 3-powerDot; 4-pacMan; 5-ghost;
+// "-"-border; 2-dot; 3-powerDot; 4-pacMan; 5-ghost;
 
 // const map = [
 //   ["-", "-", "-", "-", "-", "-", "-"],
@@ -133,16 +591,78 @@ const map = [
 //   ["-", "-", "-", "-", "-", "-", "-"],
 // ];
 
+function createImage(src) {
+  const image = new Image();
+  image.src = src;
+  return image;
+}
+
 map.forEach((row, i) => {
   row.forEach((symbol, ind) => {
     switch (symbol) {
-      case 1:
+      case "-":
         boundaries.push(
           new Boundary({
             position: {
               x: Boundary.width * ind,
               y: Boundary.height * i,
             },
+            image: createImage("./images/pipeHorizontal.png"),
+          })
+        );
+        break;
+      case "|":
+        boundaries.push(
+          new Boundary({
+            position: {
+              x: Boundary.width * ind,
+              y: Boundary.height * i,
+            },
+            image: createImage("./images/pipeVertical.png"),
+          })
+        );
+        break;
+      case "1":
+        boundaries.push(
+          new Boundary({
+            position: {
+              x: Boundary.width * ind,
+              y: Boundary.height * i,
+            },
+            image: createImage("./images/pipeCorner1.png"),
+          })
+        );
+        break;
+      case "2":
+        boundaries.push(
+          new Boundary({
+            position: {
+              x: Boundary.width * ind,
+              y: Boundary.height * i,
+            },
+            image: createImage("./images/pipeCorner2.png"),
+          })
+        );
+        break;
+      case "3":
+        boundaries.push(
+          new Boundary({
+            position: {
+              x: Boundary.width * ind,
+              y: Boundary.height * i,
+            },
+            image: createImage("./images/pipeCorner3.png"),
+          })
+        );
+        break;
+      case "4":
+        boundaries.push(
+          new Boundary({
+            position: {
+              x: Boundary.width * ind,
+              y: Boundary.height * i,
+            },
+            image: createImage("./images/pipeCorner4.png"),
           })
         );
         break;
@@ -150,25 +670,126 @@ map.forEach((row, i) => {
   });
 });
 
+function circleCollidesWithRectangle({ circle, rectangle }) {
+  return (
+    circle.position.y - circle.radius + circle.velocity.y <=
+      rectangle.position.y + rectangle.height &&
+    circle.position.x + circle.radius + circle.velocity.x >=
+      rectangle.position.x &&
+    circle.position.y + circle.radius + circle.velocity.y >=
+      rectangle.position.y &&
+    circle.position.x - circle.radius + circle.velocity.x <=
+      rectangle.position.x + rectangle.width
+  );
+}
+
 function animate() {
   requestAnimationFrame(animate);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  boundaries.forEach((boundary) => boundary.draw());
-  pacMan.draw();
-
-  pacMan.update();
-  pacMan.velocity.y = 0;
-  pacMan.velocity.x = 0;
 
   if (keys.ArrowUp.pressed && lastKey === "ArrowUp") {
-    pacMan.velocity.y = -5;
+    for (let i = 0; i < boundaries.length; i++) {
+      const boundary = boundaries[i];
+      if (
+        circleCollidesWithRectangle({
+          circle: {
+            ...pacMan,
+            velocity: {
+              x: 0,
+              y: -5,
+            },
+          },
+          rectangle: boundary,
+        })
+      ) {
+        pacMan.velocity.y = 0;
+        break;
+      } else {
+        pacMan.velocity.y = -5;
+      }
+    }
   } else if (keys.ArrowLeft.pressed && lastKey === "ArrowLeft") {
-    pacMan.velocity.x = -5;
+    for (let i = 0; i < boundaries.length; i++) {
+      const boundary = boundaries[i];
+      if (
+        circleCollidesWithRectangle({
+          circle: {
+            ...pacMan,
+            velocity: {
+              x: -5,
+              y: 0,
+            },
+          },
+          rectangle: boundary,
+        })
+      ) {
+        pacMan.velocity.x = 0;
+        break;
+      } else {
+        pacMan.velocity.x = -5;
+      }
+    }
   } else if (keys.ArrowDown.pressed && lastKey === "ArrowDown") {
-    pacMan.velocity.y = 5;
+    for (let i = 0; i < boundaries.length; i++) {
+      const boundary = boundaries[i];
+      if (
+        circleCollidesWithRectangle({
+          circle: {
+            ...pacMan,
+            velocity: {
+              x: 0,
+              y: 5,
+            },
+          },
+          rectangle: boundary,
+        })
+      ) {
+        pacMan.velocity.y = 0;
+        break;
+      } else {
+        pacMan.velocity.y = 5;
+      }
+    }
   } else if (keys.ArrowRight.pressed && lastKey === "ArrowRight") {
-    pacMan.velocity.x = 5;
+    for (let i = 0; i < boundaries.length; i++) {
+      const boundary = boundaries[i];
+      if (
+        circleCollidesWithRectangle({
+          circle: {
+            ...pacMan,
+            velocity: {
+              x: 5,
+              y: 0,
+            },
+          },
+          rectangle: boundary,
+        })
+      ) {
+        pacMan.velocity.x = 0;
+        break;
+      } else {
+        pacMan.velocity.x = 5;
+      }
+    }
   }
+
+  boundaries.forEach((boundary) => {
+    boundary.draw();
+
+    if (
+      circleCollidesWithRectangle({
+        circle: pacMan,
+        rectangle: boundary,
+      })
+    ) {
+      pacMan.velocity.x = 0;
+      pacMan.velocity.y = 0;
+    }
+  });
+
+  pacMan.update();
+  // pacMan.velocity.y = 0;
+  // pacMan.velocity.x = 0;
 }
 
 animate();
@@ -234,7 +855,7 @@ addEventListener("keyup", ({ key }) => {
 //       let x = col * tileSize;
 //       let y = row * tileSize;
 
-//       if (map[row][col] === 1) {
+//       if (map[row][col] === "-") {
 //         // Draw wall
 //         ctx.fillStyle = "blue";
 //         ctx.fillRect(x, y, tileSize, tileSize);
@@ -265,7 +886,7 @@ addEventListener("keyup", ({ key }) => {
 //     pacMan.y * tileSize + tileSize / 2,
 //     tileSize / 2.5,
 //     (0.2 - mouthAngle) * Math.PI,
-//     (1.8 + mouthAngle) * Math.PI
+//     ("-".8 + mouthAngle) * Math.PI
 //   );
 
 //   ctx.lineTo(
@@ -338,7 +959,7 @@ addEventListener("keyup", ({ key }) => {
 // }
 
 // function canMove(x, y) {
-//   return map[y] && map[y][x] !== 1;
+//   return map[y] && map[y][x] !== "-";
 // }
 
 // function updatePacMan() {
@@ -348,7 +969,7 @@ addEventListener("keyup", ({ key }) => {
 //   }
 // }
 
-// const pacManSpeed = 0.1; // Speed of PacMan, lower value = smoother movement
+// const pacManSpeed = 0."-"; // Speed of PacMan, lower value = smoother movement
 // const frameRate = 1000 / 60; // 60 FPS, or update every 16.67ms
 
 // function movePacMan() {
@@ -377,10 +998,10 @@ addEventListener("keyup", ({ key }) => {
 // function moveGhosts() {
 //   ghosts.forEach((ghost) => {
 //     let directions = [
-//       { dx: 1, dy: 0 },
-//       { dx: -1, dy: 0 },
-//       { dx: 0, dy: 1 },
-//       { dx: 0, dy: -1 },
+//       { dx: "-", dy: 0 },
+//       { dx: -"-", dy: 0 },
+//       { dx: 0, dy: "-" },
+//       { dx: 0, dy: -"-" },
 //     ];
 
 //     let randomDir = directions[Math.floor(Math.random() * directions.length)];
@@ -455,10 +1076,10 @@ addEventListener("keyup", ({ key }) => {
 
 // // Handle Key Presses
 // document.addEventListener("keydown", (event) => {
-//   if (event.key === "ArrowRight") setDirection(1, 0);
-//   if (event.key === "ArrowLeft") setDirection(-1, 0);
-//   if (event.key === "ArrowUp") setDirection(0, -1);
-//   if (event.key === "ArrowDown") setDirection(0, 1);
+//   if (event.key === "ArrowRight") setDirection("-", 0);
+//   if (event.key === "ArrowLeft") setDirection(-"-", 0);
+//   if (event.key === "ArrowUp") setDirection(0, -"-");
+//   if (event.key === "ArrowDown") setDirection(0, "-");
 // });
 
 // // Start the game loop
